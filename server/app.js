@@ -5,6 +5,8 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const db = require('./db');
+const Promise = require('bluebird');
 
 const app = express();
 
@@ -87,12 +89,44 @@ app.post('/signup', (req, res) => {
     });
 });
 
+let promiseQuery = (sql) => new Promise((resolve, reject) => {
+  db.query(sql, (err, results) => {
+    if (err) {
+      reject(err);
+    }
+    resolve(results);
+  });
+});
+
 app.post('/login', (req, res) => {
-  console.log(models);
-  models.Clicks.get(req.body)
-    .then((results)=> {
-      console.log(results);
+  let sql = `SELECT * From users where username = '${req.body.username}'`;
+  promiseQuery(sql)
+    .then(results => {
+      let password = results[0].password;
+      let salt = results[0].salt;
+      return models.Users.compare(req.body.password, password, salt);
+    })
+    .then((result) => {
+      if (result) {
+        res.location('/');
+        res.sendStatus(201);
+        res.end();
+      } else {
+        res.location('/login');
+        res.sendStatus(422);
+        res.end();
+      }
+    })
+    .catch(()=> {
+      res.location('/login');
+      res.sendStatus(500);
+      res.end();
     });
+  
+  // models.Clicks.get(req.body)
+  //   .then((results)=> {
+  //     console.log(results);
+  //   });
 });
 
 /************************************************************/
