@@ -469,7 +469,7 @@ describe('', function() {
         var response = httpMocks.createResponse();
         var requestWithMaliciousCookie = httpMocks.createRequest();
         requestWithMaliciousCookie.cookies.shortlyid = maliciousCookieHash;
-
+        
         createSession(requestWithMaliciousCookie, response, function() {
           var cookie = response.cookies.shortlyid;
           expect(cookie).to.exist;
