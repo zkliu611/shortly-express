@@ -74,14 +74,25 @@ app.post('/links', (req, res, next) => {
 // Write your authentication routes here
 /************************************************************/
 app.post('/signup', (req, res) => {
-  models.Users.create(req.body);
-  res.sendStatus(201);
-  res.end();
+  models.Users.create(req.body)
+    .then(() => {
+      res.location('/');
+      res.sendStatus(201);
+      res.end();
+    })
+    .catch(() =>{
+      res.location('/signup');
+      res.sendStatus(422);
+      res.end();
+    });
 });
 
 app.post('/login', (req, res) => {
-  console.log('hello', req.body);
-  return models.Users.compare();
+  console.log(models);
+  models.Clicks.get(req.body)
+    .then((results)=> {
+      console.log(results);
+    });
 });
 
 /************************************************************/
