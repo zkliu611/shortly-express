@@ -108,6 +108,7 @@ app.post('/login', (req, res) => {
     })
     .then((result) => {
       if (result) {
+        Auth.createSession(req, res, null);
         res.location('/');
         res.sendStatus(201);
         res.end();
@@ -122,12 +123,9 @@ app.post('/login', (req, res) => {
       res.sendStatus(500);
       res.end();
     });
-  
-  // models.Clicks.get(req.body)
-  //   .then((results)=> {
-  //     console.log(results);
-  //   });
 });
+
+
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
